@@ -1,0 +1,39 @@
+#:kivy 1.1.0
+
+<LoadQuestionsScreen>:
+    BoxLayout:
+        size_hint: None, None
+        BoxLayout:
+            pos: 90, 90
+            size: 90, 90
+            Button:
+                text: 'Загрузить вопросы'
+                on_release: root.show_load()
+
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
+
+<TicketsSettingsScreen>:
+    BoxLayout:
+        Button:
+            text: 'My settings button'
+        Button:
+            text: 'Back to menu'
+            on_press: root.manager.current = 'load_questions_screen'

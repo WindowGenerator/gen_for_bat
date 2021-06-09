@@ -1,11 +1,18 @@
 from kivy.app import App
+from kivy.lang import Builder
+from kivy.uix.screenmanager import ScreenManager, Screen
+import kivy
+from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.pagelayout import PageLayout
 from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
-
 import os
+kivy.require('1.0.7')
+
+
+Builder.load_file("questions_generator.kv")
 
 
 class LoadDialog(PageLayout):
@@ -13,13 +20,8 @@ class LoadDialog(PageLayout):
     cancel = ObjectProperty(None)
 
 
-class SaveDialog(PageLayout):
-    save = ObjectProperty(None)
-    text_input = ObjectProperty(None)
-    cancel = ObjectProperty(None)
-
-
-class Root(PageLayout):
+# Declare both screens
+class LoadQuestionsScreen(Screen):
     loadfile = ObjectProperty(None)
     savefile = ObjectProperty(None)
     text_input = ObjectProperty(None)
@@ -33,33 +35,27 @@ class Root(PageLayout):
                             size_hint=(0.9, 0.9))
         self._popup.open()
 
-    def show_save(self):
-        content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Save file", content=content,
-                            size_hint=(0.9, 0.9))
-        self._popup.open()
-
     def load(self, path, filename):
         with open(os.path.join(path, filename[0])) as stream:
             self.text_input.text = stream.read()
 
         self.dismiss_popup()
 
-    def save(self, path, filename):
-        with open(os.path.join(path, filename), 'w') as stream:
-            stream.write(self.text_input.text)
 
-        self.dismiss_popup()
-
-
-class Editor(App):
+class TicketsSettingsScreen(Screen):
     pass
 
 
-Factory.register('Root', cls=Root)
-Factory.register('LoadDialog', cls=LoadDialog)
-Factory.register('SaveDialog', cls=SaveDialog)
+class MainApp(App):
+    def build(self):
+        # Create the screen manager
+        sm = ScreenManager()
+        sm.add_widget(LoadQuestionsScreen(name='load_questions_screen'))
+        sm.add_widget(TicketsSettingsScreen(name='tickets_settings_screen'))
+
+        return sm
 
 
 if __name__ == '__main__':
-    Editor().run()
+    app = MainApp()
+    app.run()
