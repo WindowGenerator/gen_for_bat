@@ -1,3 +1,5 @@
+import os
+import sys
 from typing import Optional, Dict, Any
 
 import kivy
@@ -5,12 +7,14 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty as ObjectPropertyKivy
+from kivy.resources import resource_add_path
 from kivy.uix.pagelayout import PageLayout
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
-from app.parser.parsers import parse_factory, FormatEnum
-from app.logic.shuffle import tickets_generator
+
 from app.generator.quesions import generate_questions_factory
+from app.logic.shuffle import tickets_generator
+from app.parser.parsers import parse_factory, FormatEnum
 
 kivy.require('1.0.7')
 
@@ -199,5 +203,7 @@ class MainApp(App):
 
 
 if __name__ == '__main__':
+    if hasattr(sys, '_MEIPASS'):
+        resource_add_path(os.path.join(sys._MEIPASS))
     app = MainApp()
     app.run()
