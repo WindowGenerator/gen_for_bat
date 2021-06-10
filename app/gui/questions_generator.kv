@@ -1,15 +1,49 @@
 #:kivy 1.1.0
 
 <LoadQuestionsScreen>:
-    BoxLayout:
-        size_hint: None, None
-        BoxLayout:
-            pos: 90, 90
-            size: 90, 90
+    canvas:
+        Color:
+            rgba: 0, 1, 1, .2
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    AnchorLayout:
+        padding: [50, 50, 50, 50]
+        anchor_x: 'center'
+        anchor_y: 'center'
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
             Button:
+                size_hint: (.3, .1)
                 text: 'Загрузить вопросы'
                 on_release: root.show_load()
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Далее'
+                on_press: root.validate_goto_next_screen()
 
+<ErrorPopup>:
+    AnchorLayout:
+        padding: [5, 5, 5, 5]
+        anchor_x: 'center'
+        anchor_y: 'center'
+        AnchorLayout:
+            anchor_x: 'right'
+            anchor_y: 'top'
+            Label:
+                text_size: self.width, None
+                text: root.error_text
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: root.close_button_text
+                on_release: root.close()
 
 <LoadDialog>:
     BoxLayout:
@@ -31,9 +65,85 @@
                 on_release: root.load(filechooser.path, filechooser.selection)
 
 <TicketsSettingsScreen>:
+    AnchorLayout:
+        padding: [50, 50, 50, 50]
+        anchor_x: 'center'
+        anchor_y: 'center'
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            AnchorLayout:
+                anchor_x: 'left'
+                anchor_y: 'center'
+                Label:
+                    text: 'Введите количество вопросов в билете  '
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'center'
+                TextInput:
+                    id: input_text
+                    size_hint: (.1, .1)
+                    on_text: root.on_text_handler()
+        AnchorLayout:
+            anchor_x: 'left'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Назад'
+                on_release: root.manager.current = 'load_questions_screen'
+        AnchorLayout:
+            anchor_x: 'right'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Далее'
+                on_press: root.validate_goto_next_screen()
+
+
+<SaveQuestionsToScreen>:
+    AnchorLayout:
+        padding: [50, 50, 50, 50]
+        anchor_x: 'center'
+        anchor_y: 'center'
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Сохранить'
+                on_release: root.show_save()
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Выход'
+                on_press: root.exit_app()
+
+
+<SaveDialog>:
+    text_input: text_input
     BoxLayout:
-        Button:
-            text: 'My settings button'
-        Button:
-            text: 'Back to menu'
-            on_press: root.manager.current = 'load_questions_screen'
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            on_selection: text_input.text = self.selection and self.selection[0] or ''
+
+        TextInput:
+            id: text_input
+            size_hint_y: None
+            height: 30
+            multiline: False
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Save"
+                on_release: root.save(filechooser.path, text_input.text)
