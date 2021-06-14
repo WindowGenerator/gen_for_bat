@@ -1,12 +1,7 @@
 #:kivy 1.1.0
 
+
 <LoadQuestionsScreen>:
-    canvas:
-        Color:
-            rgba: 0, 1, 1, .2
-        Rectangle:
-            size: self.size
-            pos: self.pos
     AnchorLayout:
         padding: [50, 50, 50, 50]
         anchor_x: 'center'
@@ -16,7 +11,7 @@
             anchor_y: 'center'
             Button:
                 size_hint: (.3, .1)
-                text: 'Загрузить вопросы'
+                text: 'Загрузить вопросы и ответы'
                 on_release: root.show_load()
         AnchorLayout:
             anchor_x: 'center'
@@ -24,7 +19,8 @@
             Button:
                 size_hint: (.3, .1)
                 text: 'Далее'
-                on_press: root.validate_goto_next_screen()
+                on_press: root.validate_and_goto_next_screen()
+
 
 <ErrorPopup>:
     AnchorLayout:
@@ -45,6 +41,7 @@
                 text: root.close_button_text
                 on_release: root.close()
 
+
 <LoadDialog>:
     BoxLayout:
         size: root.size
@@ -63,6 +60,7 @@
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
+
 
 <TicketsSettingsScreen>:
     AnchorLayout:

@@ -7,7 +7,8 @@ QuestionInVarsType = Dict[str, List[str]]
 
 Question = str
 Answer = Tuple[int, str]
-QuestionAndAnswer = Tuple[Question, List[Answer]]
+AnswerQuestion = int
+QuestionAndAnswer = Tuple[Question, AnswerQuestion, List[Answer]]
 QuestionsToAnswers = Dict[int, QuestionAndAnswer]
 
 
@@ -16,6 +17,7 @@ class QuestionAnswerType(str, Enum):
 
 
 QUESTIONS = 'questions'
+ANSWERS = 'answers.txt'
 
 
 def validate_and_return_questions(
@@ -24,8 +26,33 @@ def validate_and_return_questions(
 
     asb_dir = os.path.abspath(source_path)
     questions_dir = os.path.join(asb_dir, QUESTIONS)
+    answers_file = os.path.join(asb_dir, ANSWERS)
 
     questions_to_answers: QuestionsToAnswers = dict()
+    _q_answers: Dict[int, int] = dict()
+
+    if not os.path.exists(answers_file) or not os.path.isfile(answers_file):
+        raise RuntimeError('Отсутствует файл с ответами `answers` или не существует')
+
+    with open(answers_file, 'rt') as _file_fd:
+        for index, line in enumerate(_file_fd.readlines()):
+            split_line = line.split()
+
+            if len(split_line) != 2:
+                raise RuntimeError(f'Что-то нет ак в строке №{index}. Вместо вопроса ответа там что-то еще')
+
+            q_n, q_a = line.split()
+
+            try:
+                q_n = int(q_n)
+                q_a = int(q_a)
+            except ValueError as exc:
+                raise RuntimeError(
+                    f'Вопрос или ответа на строке №{index}, '
+                    'не соответствует представлению способному преобразовываться к числу'
+                ) from exc
+
+            _q_answers[q_n] = q_a
 
     for current_dir, dirs, files in os.walk(asb_dir):
 
@@ -61,7 +88,7 @@ def validate_and_return_questions(
                 raise RuntimeError('Почему-то директории совпадают')
 
             if questions_count + 1 != len(files):
-                raise RuntimeError(f'Количество вопросов меньше чем заявлено {questions_count}')
+                raise RuntimeError(f'Количество вопросов меньше чем заявлено {questions_count} dir: {files}')
 
             question = None
             answers = []
@@ -85,6 +112,13 @@ def validate_and_return_questions(
                 answers.append((answer_num, os.path.join(current_dir, _file)))
 
             question_number = int(os.path.basename(os.path.normpath(current_dir)))
-            questions_to_answers[question_number] = (question, sorted(answers, key=lambda x: x[0]))
+
+            answer = _q_answers.get(question_number, None)
+            if answer is None:
+                print(question_number)
+                print(_q_answers)
+                raise RuntimeError('')
+
+            questions_to_answers[question_number] = (question, answer, sorted(answers, key=lambda x: x[0]))
 
     return QuestionAnswerType.image_files, questions_to_answers

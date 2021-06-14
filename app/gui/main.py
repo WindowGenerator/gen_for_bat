@@ -24,6 +24,8 @@ Builder.load_file("questions_generator.kv")
 
 GlobalStore: Dict[str, Optional[Any]] = dict(
     path_to_folder=None,
+    path_to_answers=None,
+
     questions_count=None,
     questions_answers_type=None,
     questions_to_answers=None,
@@ -81,8 +83,9 @@ class LoadQuestionsScreen(BaseScreen):
         super().__init__(**kw)
 
         self._path_to_folder: Optional[str] = GlobalStore['path_to_folder']
+        self._path_to_answers: Optional[str] = GlobalStore['path_to_answers']
 
-    def validate_goto_next_screen(self):
+    def validate_and_goto_next_screen(self):
         if self._path_to_folder is None:
             self._dismiss_popup()
             self._show_error("Для начала выберете директорию где располагаются вопросы для билетов")
@@ -101,8 +104,9 @@ class LoadQuestionsScreen(BaseScreen):
             self.manager.current = 'tickets_settings_screen'
 
     def show_load(self):
+
         content = LoadDialog(
-            load=self.load, cancel=self._dismiss_popup
+            load=self.load_q_and_a, cancel=self._dismiss_popup
         )
         if self._popup is not None:
             return
@@ -113,8 +117,7 @@ class LoadQuestionsScreen(BaseScreen):
         )
         self._popup.open()
 
-
-    def load(self, path: str, filename: str):
+    def load_q_and_a(self, path: str, filename: str):
         self._path_to_folder = path
         self._dismiss_popup()
 

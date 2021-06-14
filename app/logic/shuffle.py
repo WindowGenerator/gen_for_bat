@@ -31,7 +31,7 @@ def _get_ticket_generator(questions_to_answers: QuestionsToAnswers, questions_co
         )
 
     # TODO: не надо парсить то, что уже пришло мысль про это: `int(quesion.split('.')[0])``
-    questions_list: List[str] = sorted(questions_to_answers.keys(), key=sort_quesions)
+    questions_list: List[int] = sorted(questions_to_answers.keys(), key=sort_quesions)
 
     return _chunks(questions_list, questions_count)
 
@@ -47,4 +47,4 @@ def sort_quesions(quesion: Hashable):
     if isinstance(quesion, int):
         return quesion
     
-    raise Exception('БЛЯЯЯЯ')
+    raise RuntimeError('sort questions не удался(')
