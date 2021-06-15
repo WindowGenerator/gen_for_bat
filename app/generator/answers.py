@@ -16,8 +16,6 @@ def generate_answers(file_path: str, ticket_to_answers: TicketToAnswers) -> None
 
     columns = len(list(ticket_to_answers.values())[-1])
 
-    print(ticket_to_answers)
-
     table = document.add_table(rows=1, cols=columns + 1)
 
     first_row_cells = table.rows[0].cells
@@ -41,7 +39,6 @@ def generate_answers(file_path: str, ticket_to_answers: TicketToAnswers) -> None
         ticket = ticket_to_answers[ticket_n]
 
         for column_n, answer in ticket:
-            print(column_n)
             row_cells[column_n].text = str(answer)
 
     document.add_page_break()

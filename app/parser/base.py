@@ -39,7 +39,7 @@ def validate_and_return_questions(
             split_line = line.split()
 
             if len(split_line) != 2:
-                raise RuntimeError(f'Что-то нет ак в строке №{index}. Вместо вопроса ответа там что-то еще')
+                raise RuntimeError(f'Что-то не так в строке №{index}. Вместо вопроса ответа там что-то еще')
 
             q_n, q_a = line.split()
 

@@ -69,7 +69,7 @@
         anchor_y: 'center'
         AnchorLayout:
             anchor_x: 'center'
-            anchor_y: 'center'
+            anchor_y: 'top'
             AnchorLayout:
                 anchor_x: 'left'
                 anchor_y: 'center'
@@ -82,6 +82,24 @@
                     id: input_text
                     size_hint: (.1, .1)
                     on_text: root.on_text_handler()
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            AnchorLayout:
+                anchor_x: 'left'
+                anchor_y: 'center'
+                Label:
+                    text: "Перемешать вопросы"
+                CheckBox:
+                    color:.294, .761, .623
+                    on_active: root.checkbox_click('shuffle_q')
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'center'
+                Label:
+                    text: "Перемешать ответы"
+                CheckBox:
+                    on_active: root.checkbox_click('shuffle_a')
         AnchorLayout:
             anchor_x: 'left'
             anchor_y: 'bottom'
