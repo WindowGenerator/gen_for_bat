@@ -28,6 +28,8 @@ def validate_and_return_questions(
     questions_dir = os.path.join(asb_dir, QUESTIONS)
     answers_file = os.path.join(asb_dir, ANSWERS)
 
+    questions_count = None
+
     questions_to_answers: QuestionsToAnswers = dict()
     _q_answers: Dict[int, int] = dict()
 
@@ -87,8 +89,11 @@ def validate_and_return_questions(
             if current_dir == questions_dir:
                 raise RuntimeError('Почему-то директории совпадают')
 
-            if questions_count + 1 != len(files):
-                raise RuntimeError(f'Количество вопросов меньше чем заявлено {questions_count} dir: {files}')
+            if questions_count is None:
+                questions_count = len(files) - 1
+            else:
+                if questions_count + 1 != len(files):
+                    raise RuntimeError(f'Количество вопросов меньше чем заявлено {questions_count} dir: {files}')
 
             question = None
             answers = []
@@ -115,9 +120,9 @@ def validate_and_return_questions(
 
             answer = _q_answers.get(question_number, None)
             if answer is None:
-                print(question_number)
-                print(_q_answers)
-                raise RuntimeError('')
+                raise RuntimeError(
+                    f'Не существует такого ответа для вопроса №{question_number}'
+                )
 
             questions_to_answers[question_number] = (question, answer, sorted(answers, key=lambda x: x[0]))
 

@@ -21,19 +21,34 @@ def shuffle_if_needed(
 def tickets_generator(
         questions_to_answers: QuestionsToAnswers,
         questions_count: int,
-        shuffle_function: str = "split_on_chunks",
+        use_classic: bool = False
 ) -> TicketsListType:
     _validate_questions(questions_to_answers, questions_count)
 
-    if shuffle_function == "split_on_chunks":
-        return list(_get_ticket_generator_split_on_chunks(questions_to_answers, questions_count))
+    if use_classic:
+        shuffle_function = "split_on_bat"
+    else:
+        shuffle_function = "split_on_chunks"
+
+    return list(
+        _get_ticket_generator_split_on_chunks(
+            questions_to_answers, questions_count, shuffle_function
+        )
+    )
 
 
-def _get_ticket_generator_split_on_chunks(questions_to_answers: QuestionsToAnswers, questions_count: int) -> Generator:
+def _get_ticket_generator_split_on_chunks(
+        questions_to_answers: QuestionsToAnswers, questions_count: int, shuffle_function: str
+) -> Generator:
     # TODO: не надо парсить то, что уже пришло мысль про это: `int(quesion.split('.')[0])``
     questions_list: List[int] = sorted(questions_to_answers.keys(), key=sort_questions)
 
-    return _chunks(questions_list, questions_count)
+    if shuffle_function == "split_on_chunks":
+        return _chunks(questions_list, questions_count)
+    elif shuffle_function == "split_on_bat":
+        print(list(_gen_bat(len(questions_list), questions_count)))
+        print(list(_chunks(questions_list, questions_count)))
+        return _gen_bat(len(questions_list), questions_count)
 
 
 def _shuffle_q(questions_to_answers: QuestionsToAnswers) -> QuestionsToAnswers:
@@ -91,6 +106,20 @@ def _validate_questions(questions_to_answers: QuestionsToAnswers, questions_coun
 def _chunks(l: List[Any], n: int):
     for i in range(0, len(l), n):
         yield l[i:i + n]
+
+
+def _gen_bat(M: int, m: int):
+    n = int(M / m)
+    if M % m != 0:
+        n += 1
+    for index in range(n):
+        out_chunk = list()
+        for jndex in range((m - 1) + 1):
+            elem = (index + 1) + (jndex * n)
+            if elem > M:
+                elem = random.randint(1, M)
+            out_chunk.append(elem)
+        yield out_chunk
 
 
 def sort_questions(question: Hashable):

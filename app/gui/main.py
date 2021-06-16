@@ -129,8 +129,8 @@ class TicketsSettingsScreen(BaseScreen):
         self._questions_count: Optional[int] = None
         self._path_to_folder: Optional[str] = GlobalStore['path_to_folder']
 
-        self._shuffle_q: bool = False
-        self._shuffle_a: bool = False
+        self._use_classic: bool = True
+        self._shuffle: bool = False
 
     def validate_goto_next_screen(self):
         try:
@@ -141,18 +141,20 @@ class TicketsSettingsScreen(BaseScreen):
             return
 
         try:
-            tickets = tickets_generator(GlobalStore['questions_to_answers'], 5)
+            tickets = tickets_generator(
+                GlobalStore['questions_to_answers'], self._questions_count, use_classic=self._use_classic
+            )
         except Exception as exc:
             self._dismiss_popup()
             self._show_error(''.join(exc.args))
             return
 
-        if self._shuffle_q or self._shuffle_a:
+        if self._shuffle:
             try:
                 GlobalStore['questions_to_answers'] = shuffle_if_needed(
                     GlobalStore['questions_to_answers'],
-                    with_shuffle_q=self._shuffle_q,
-                    with_shuffle_a=self._shuffle_a,
+                    with_shuffle_q=self._shuffle,
+                    with_shuffle_a=self._shuffle,
                 )
             except Exception as exc:
                 self._dismiss_popup()
@@ -167,12 +169,11 @@ class TicketsSettingsScreen(BaseScreen):
     def on_text_handler(self):
         self._questions_count = self.ids['input_text'].text
 
-    def checkbox_click(self, action: str):
-        if action == 'shuffle_q':
-            self._shuffle_q = not self._shuffle_q
-        if action == 'shuffle_a':
-            self._shuffle_a = not self._shuffle_a
-        raise RuntimeError()
+    def checkbox_click_classic(self):
+        self._use_classic = not self._use_classic
+
+    def checkbox_click_shuffle(self):
+        self._shuffle = not self._shuffle
 
 
 class SaveQuestionsToScreen(BaseScreen):

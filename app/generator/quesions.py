@@ -35,21 +35,19 @@ def generate_questions_docx(
 
         ticket_to_q_answers[ticket_num + 1] = []
 
-        for question in ticket:
+        for index, question in enumerate(ticket):
             if question not in questions_to_answers:
                 raise Exception
 
-            q_num_for_current_ticket = (question - ticket_num * len(ticket))
-
             current_question_image_path, answer, current_answers_image_paths = questions_to_answers[question]
-            paragraph_gen(document, current_question_image_path, q_num_for_current_ticket)
+            paragraph_gen(document, current_question_image_path, index + 1)
 
             ticket_to_q_answers[ticket_num + 1].append(
-                (q_num_for_current_ticket, answer)
+                (index + 1, answer)
             )
 
-            for index, answer_path in current_answers_image_paths:
-                paragraph_gen(document, answer_path, index)
+            for jndex, answer_path in current_answers_image_paths:
+                paragraph_gen(document, answer_path, jndex)
 
             paragraph = document.add_paragraph()
             run = paragraph.add_run()
