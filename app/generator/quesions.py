@@ -1,8 +1,12 @@
-from docx import Document
 from enum import Enum
+
+import PIL
+from PIL import Image
+from docx import Document
+
+from app.generator.answers import TicketToAnswers, generate_answers
 from app.logic.shuffle import TicketsListType
 from app.parser.base import QuestionsToAnswers, QuestionAnswerType
-from app.generator.answers import TicketToAnswers, generate_answers
 
 
 class OutputFormatType(str, Enum):
@@ -16,7 +20,6 @@ def generate_questions_factory(
         tickets: TicketsListType,
         format_type: OutputFormatType = OutputFormatType.docx,
 ) -> None:
-
     if format_type == OutputFormatType.docx:
         generate_questions_docx(file_path, questions_to_answers, questions_answers_type, tickets)
 
@@ -28,6 +31,7 @@ def generate_questions_docx(
         tickets: TicketsListType,
 ) -> None:
     ticket_to_q_answers: TicketToAnswers = dict()
+
 
     for ticket_num, ticket in enumerate(tickets):
         document = Document()
@@ -62,6 +66,12 @@ def paragraph_gen(document: Document, image_path: str, number: int):
     paragraph = document.add_paragraph()
     run = paragraph.add_run()
     run.text = f"{number}."
+
+    _image = Image.open(image_path)
+    width, height = _image.size
+
+    cof = width / 350
+
     inline_shape = run.add_picture(image_path)
-    inline_shape.width = int(inline_shape.width * 1 / 3)
-    inline_shape.height = int(inline_shape.height * 1 / 3)
+    inline_shape.width = int(inline_shape.width / cof)
+    inline_shape.height = int(inline_shape.height / cof)
