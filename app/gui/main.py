@@ -20,7 +20,174 @@ kivy.require('1.0.7')
 
 Config.set('graphics', 'resizable', False)
 
-Builder.load_file("questions_generator.kv")
+# Builder.load_file("questions_generator.kv")
+Builder.load_string("""
+#:kivy 1.1.0
+
+
+<LoadQuestionsScreen>:
+    AnchorLayout:
+        padding: [50, 50, 50, 50]
+        anchor_x: 'center'
+        anchor_y: 'center'
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Загрузить вопросы и ответы'
+                on_release: root.show_load()
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Далее'
+                on_press: root.validate_and_goto_next_screen()
+
+
+<ErrorPopup>:
+    AnchorLayout:
+        padding: [5, 5, 5, 5]
+        anchor_x: 'center'
+        anchor_y: 'center'
+        AnchorLayout:
+            anchor_x: 'right'
+            anchor_y: 'top'
+            Label:
+                text_size: self.width, None
+                text: root.error_text
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: root.close_button_text
+                on_release: root.close()
+
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
+
+
+<TicketsSettingsScreen>:
+    AnchorLayout:
+        padding: [50, 50, 50, 50]
+        anchor_x: 'center'
+        anchor_y: 'center'
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            AnchorLayout:
+                anchor_x: 'left'
+                anchor_y: 'center'
+                Label:
+                    text: 'Введите количество вопросов в билете  '
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'center'
+                TextInput:
+                    id: input_text
+                    size_hint: (.1, .1)
+                    on_text: root.on_text_handler()
+
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'top'
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'top'
+                Label:
+                    size_hint: (.6, .1)
+                    text: "Случайно перемешать ответы и вопросы"
+            AnchorLayout:
+                anchor_x: 'right'
+                anchor_y: 'top'
+                CheckBox:
+                    size_hint: (.1, .1)
+                    on_release: root.checkbox_click_shuffle()
+
+        AnchorLayout:
+            anchor_x: 'left'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Назад'
+                on_release: root.manager.current = 'load_questions_screen'
+        AnchorLayout:
+            anchor_x: 'right'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Далее'
+                on_press: root.validate_goto_next_screen()
+
+
+<SaveQuestionsToScreen>:
+    AnchorLayout:
+        padding: [50, 50, 50, 50]
+        anchor_x: 'center'
+        anchor_y: 'center'
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'center'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Сохранить'
+                on_release: root.show_save()
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            Button:
+                size_hint: (.3, .1)
+                text: 'Выход'
+                on_press: root.exit_app()
+
+
+<SaveDialog>:
+    text_input: text_input
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            on_selection: text_input.text = self.selection and self.selection[0] or ''
+
+        TextInput:
+            id: text_input
+            size_hint_y: None
+            height: 30
+            multiline: False
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Save"
+                on_release: root.save(filechooser.path, text_input.text)
+
+""")
 
 GlobalStore: Dict[str, Optional[Any]] = dict(
     path_to_folder=None,
@@ -234,8 +401,18 @@ class MainApp(App):
         return sm
 
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 if __name__ == '__main__':
-    if hasattr(sys, '_MEIPASS'):
-        resource_add_path(os.path.join(sys._MEIPASS))
+    # resource_add_path(resource_path('app/gui'))
     app = MainApp()
     app.run()

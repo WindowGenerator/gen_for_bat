@@ -70,7 +70,7 @@ def paragraph_gen(document: Document, image_path: str, number: int):
     _image = Image.open(image_path)
     width, height = _image.size
 
-    cof = width / 350
+    cof = width / 400
 
     inline_shape = run.add_picture(image_path)
     inline_shape.width = int(inline_shape.width / cof)
