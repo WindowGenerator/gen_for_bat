@@ -90,30 +90,14 @@
                 anchor_x: 'right'
                 anchor_y: 'top'
                 Label:
-                    size_hint: (.5, .1)
-                    text: "Перемешать ответы и вопросы"
+                    size_hint: (.6, .1)
+                    text: "Случайно перемешать ответы и вопросы"
             AnchorLayout:
                 anchor_x: 'right'
                 anchor_y: 'top'
                 CheckBox:
                     size_hint: (.1, .1)
                     on_release: root.checkbox_click_shuffle()
-
-        AnchorLayout:
-            anchor_x: 'center'
-            anchor_y: 'top'
-            AnchorLayout:
-                anchor_x: 'left'
-                anchor_y: 'top'
-                Label:
-                    size_hint: (.4, .1)
-                    text: "Использовать не классический алгоритм"
-            AnchorLayout:
-                anchor_x: 'center'
-                anchor_y: 'top'
-                CheckBox:
-                    size_hint: (.1, .1)
-                    on_release: root.checkbox_click_classic()
 
         AnchorLayout:
             anchor_x: 'left'

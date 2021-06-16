@@ -47,7 +47,6 @@ def _get_ticket_generator_split_on_chunks(
         return _chunks(questions_list, questions_count)
     elif shuffle_function == "split_on_bat":
         print(list(_gen_bat(len(questions_list), questions_count)))
-        print(list(_chunks(questions_list, questions_count)))
         return _gen_bat(len(questions_list), questions_count)
 
 
@@ -96,12 +95,6 @@ def _validate_questions(questions_to_answers: QuestionsToAnswers, questions_coun
             "Вопросов для билета не может быть больше общего количества вопросов"
         )
 
-    if all_questions_count_real % questions_count != 0:
-        raise ValueError(
-            f"Общее количество вопросов {all_questions_count_real} "
-            f"не делится нацело на количество вопросов {questions_count} в одном билете"
-        )
-
 
 def _chunks(l: List[Any], n: int):
     for i in range(0, len(l), n):
@@ -112,12 +105,18 @@ def _gen_bat(M: int, m: int):
     n = int(M / m)
     if M % m != 0:
         n += 1
+
     for index in range(n):
         out_chunk = list()
         for jndex in range((m - 1) + 1):
             elem = (index + 1) + (jndex * n)
+
             if elem > M:
+                semen = set(out_chunk)
                 elem = random.randint(1, M)
+                while elem in semen:
+                    elem = random.randint(1, M)
+
             out_chunk.append(elem)
         yield out_chunk
 

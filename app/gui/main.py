@@ -134,15 +134,21 @@ class TicketsSettingsScreen(BaseScreen):
 
     def validate_goto_next_screen(self):
         try:
+            if self._questions_count is None:
+                raise ValueError
             self._questions_count = int(self._questions_count)
         except ValueError as exc:
             self._dismiss_popup()
             self._show_error("Для начала выберете количество вопросов числом")
             return
+        except Exception as exc:
+            self._dismiss_popup()
+            self._show_error(''.join(exc.args))
+            return
 
         try:
             tickets = tickets_generator(
-                GlobalStore['questions_to_answers'], self._questions_count, use_classic=self._use_classic
+                GlobalStore['questions_to_answers'], self._questions_count, use_classic=True
             )
         except Exception as exc:
             self._dismiss_popup()
